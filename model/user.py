@@ -1,4 +1,3 @@
-from db.db_handle import DB
 from uuid import uuid4
 
 
@@ -10,10 +9,13 @@ class Document(object):
     document_prefix = 'doc'
     required_keys = []
 
-    def __init__(self, data_dict=None, doc_id=None):
+    def __init__(self, db, data_dict=None, doc_id=None):
+        self.db = db
         self.doc_id = None
         self.data_dict = None
         if doc_id:
+            if self.document_prefix in doc_id:
+                doc_id = doc_id.split('_')[1]
             self.load(doc_id)
             self.doc_id = doc_id
         elif data_dict:
@@ -21,7 +23,6 @@ class Document(object):
                 return
             self.data_dict = data_dict
             print self.data_dict
-
 
     def validate(self, data):
         print data.keys()
@@ -37,8 +38,8 @@ class Document(object):
 
     def load(self, doc_id):
         doc_id_to_load = self.document_prefix + '_' + doc_id
-        if DB.key_type(doc_id_to_load) == 'hash':
-            self.data_dict = DB.get_dict(doc_id_to_load)
+        if self.db.type(doc_id_to_load) == 'hash':
+            self.data_dict = self.db.hgetall(doc_id_to_load)
             return doc_id_to_load
         else:
             raise NotFound
@@ -47,7 +48,7 @@ class Document(object):
         if not self.doc_id:
             self.doc_id = self.get_uid_for_type()
         print self.data_dict
-        DB.set_dict(self.doc_id, self.data_dict)
+        self.db.hmset(self.doc_id, self.data_dict)
         return self.doc_id
 
     @classmethod
@@ -59,8 +60,16 @@ class User(Document):
     document_prefix = 'user'
     required_keys = ['user_name', 'real_name', 'password']
 
-    def __init__(self, uid=None, data_dict=None):
-        Document.__init__(self, doc_id=uid, data_dict=data_dict)
+    def __init__(self, db,  doc_id=None, data_dict=None):
+        Document.__init__(self, db, doc_id=doc_id, data_dict=data_dict)
+
+
+class Post(Document):
+    document_prefix = 'post'
+    required_keys = ['user_name', 'subject', 'body']
+
+    def __init__(self, db,  doc_id=None, data_dict=None):
+        Document.__init__(self, db, doc_id=doc_id, data_dict=data_dict)
 
 
 

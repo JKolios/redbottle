@@ -2,3 +2,5 @@ redis
 hiredis
 bottle
 bottle-session
+bottle-redis
+pycrypto
