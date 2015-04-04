@@ -41,6 +41,7 @@ def get_all_posts(db, session):
     posts = []
     for post_id in all_post_ids:
         posts.append(Post(db=db, doc_id=post_id).data)
+    print posts
 
     return bottle.template('read_template.tpl', posts=posts)
 
