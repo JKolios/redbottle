@@ -1,6 +1,6 @@
 <p style="text-align : center"><a href="/">Go Back.</a></p>
 
-<form action="signin_result" method=POST>
+<form action="sign_in_result" method=POST>
 Username:<br>
 <input type="text" name="user_name" >
 <br>
