@@ -14,6 +14,8 @@ class Document(object):
         self.doc_id = None
         self.data_dict = None
         if doc_id:
+            if self.document_prefix in doc_id:
+                doc_id = doc_id.split('_')[1]
             self.load(doc_id)
             self.doc_id = doc_id
         elif data_dict:
