@@ -38,7 +38,10 @@ def signin_result(db, session):
         user_dict = User(db=db, doc_id=user_record_id).data
         if user_name == user_dict['user_name']:
             if password == user_dict['password']:
-                session['user'] = user_dict
+
+                session['user_id'] = user_record_id
+                session['user_name'] = user_dict['user_name']
+                session['real_name'] = user_dict['real_name']
                 message = 'Signing in as: %s' % user_dict['user_name']
                 break
             else:
@@ -73,7 +76,7 @@ def show_post_form(session):
 def add_new_post(db, session):
     subject = bottle.request.query.subject
     post = bottle.request.query.post
-    new_post = Post(db=db, data_dict=dict(subject=subject, body=post, user_name=session['user']['user_name']))
+    new_post = Post(db=db, data_dict=dict(subject=subject, body=post, user_name=session['user_name']))
     new_post.save()
     return bottle.template('post_success', subject=subject, post=post)
 
