@@ -31,7 +31,7 @@ def show_post_form(session):
 def add_new_post(db, session):
     subject = bottle.request.query.subject
     post = bottle.request.query.post
-    new_post = Post(db=db, data_dict=dict(subject=subject, body=post, user='foo'))
+    new_post = Post(db=db, data_dict=dict(subject=subject, body=post, user_name='foo'))
     new_post.save()
     return bottle.template('post_success', subject=subject, post=post)
 
