@@ -18,7 +18,11 @@ def app_init():
     redis_plugin = RedisPlugin(**redis_config)
     bottledis_app.install(redis_plugin)
 
-    session_plugin = SessionPlugin(cookie_lifetime=SESSION_LIFETIME, **redis_config)
+    session_plugin = SessionPlugin(cookie_lifetime=SESSION_LIFETIME,
+                                   host=redis_config['hostname'],
+                                   port=redis_config['port'],
+                                   db=redis_config['database'])
+
     bottledis_app.install(session_plugin)
 
     bottle.run(bottledis_app, **bottle_config)
