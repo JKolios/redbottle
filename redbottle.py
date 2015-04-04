@@ -42,7 +42,7 @@ def get_all_posts(db, session):
     for post_id in all_post_ids:
         posts.append(Post(db=db, doc_id=post_id).data_dict)
 
-    return bottle.template('read_template.tpl', post_list=posts)
+    return bottle.template('read_template.tpl', posts=posts)
 
 
 @bottledis_app.route('/clear_posts')
