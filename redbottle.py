@@ -117,6 +117,12 @@ def get_user_data(db, session):
     except NotFound:
         return bottle.template('user_not_found', {'uid': uid})
 
+@bottledis_app.route('/logout', method='GET')
+def log_out(db, session):
+    user_name = session['user_name']
+    session.destroy()
+    return bottle.template('logout_result', user_name=user_name)
+
 
 if __name__ == '__main__':
     app_init()
