@@ -19,7 +19,7 @@ def app_init():
 
 @bottledis_app.route('/')
 def show_home(db, session):
-    return bottle.template('home_template.tpl', session)
+    return bottle.template('home_template.tpl', {'session': session})
 
 
 @bottledis_app.route('/sign_in')
@@ -45,7 +45,7 @@ def signin_result(db, session):
                 break
     if 'user' not in session:
         message = 'Sign in failed: No such user.'
-    return bottle.template('sign_in_result.tpl', message)
+    return bottle.template('sign_in_result.tpl', {'message': message})
 
 
 @bottledis_app.route('/sign_up', method='GET')
