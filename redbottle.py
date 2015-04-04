@@ -37,6 +37,7 @@ def add_new_post(db, session):
 @bottledis_app.route('/get_all_posts')
 def get_all_posts(db, session):
     all_post_ids = db.scan(0, match='post*')
+    print all_post_ids
 
     posts = []
     for post_id in all_post_ids:
