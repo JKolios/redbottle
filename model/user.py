@@ -46,7 +46,7 @@ class Document(object):
         if not self.doc_id:
             self.doc_id = self.get_uid_for_type()
         print self.data_dict
-        self.db.hgetall(self.doc_id, self.data_dict)
+        self.db.hmset(self.doc_id, self.data_dict)
         return self.doc_id
 
     @classmethod
