@@ -34,24 +34,23 @@ def add_new_post(db, session):
     return bottle.template('post_success', subject=subject, post=post)
 
 
-@bottledis_app.route('/get_new_posts')
-def get_new_posts(db, session):
-    start = bottle.request.query.get('start', 0)
-    end = bottle.request.query.get('end', 9)
+@bottledis_app.route('/get_all_posts')
+def get_all_posts(db, session):
     all_post_ids = db.scan(0, match='post*')
 
-    subjects = db.lrange(subject_list_key, start=start, end=end)
-    posts = db.lrange(post_list_key, start=start, end=end)
+    posts = []
+    for post_id in all_post_ids:
+        posts.append(Post(db=db, doc_id=post_id).data_dict)
 
-    return bottle.template('read_template.tpl', subject_list=subjects, post_list=posts)
+    return bottle.template('read_template.tpl', post_list=posts)
 
 
 @bottledis_app.route('/clear_posts')
 def clear_posts(db, session):
-    length = db.llen(post_list_key)
-    db.delete(post_list_key)
-    db.delete(subject_list_key)
-    return bottle.template('delete_template.tpl', length=length)
+    all_post_ids = db.scan(0, match='post*')
+    for post_id in all_post_ids:
+        db.delete(post_id)
+    return bottle.template('delete_template.tpl', length=len(all_post_ids))
 
 
 @bottledis_app.route('/user', method='GET')
