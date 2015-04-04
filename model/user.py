@@ -58,8 +58,8 @@ class User(Document):
     document_prefix = 'user'
     required_keys = ['user_name', 'real_name', 'password']
 
-    def __init__(self, uid=None, data_dict=None):
-        Document.__init__(self, doc_id=uid, data_dict=data_dict)
+    def __init__(self, db,  uid=None, data_dict=None):
+        Document.__init__(self, db, doc_id=uid, data_dict=data_dict)
 
 
 

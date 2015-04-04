@@ -76,7 +76,7 @@ def register_user(rdb, session):
     user_name = bottle.request.forms.get('user_name')
     real_name = bottle.request.forms.get('real_name')
     password = bottle.request.forms.get('password')
-    new_user = User(data_dict=dict(user_name=user_name, real_name=real_name, password=password))
+    new_user = User(rdb, data_dict=dict(user_name=user_name, real_name=real_name, password=password))
     uid = new_user.save()
     return bottle.template('user_success', {'uid': uid})
 
@@ -89,7 +89,7 @@ def show_user_data_form(rdb, session):
 def get_user_data(rdb, session):
     uid = bottle.request.forms.get('uid')
     try:
-        user = User(uid=uid)
+        user = User(rdb, uid=uid)
         return bottle.template('user_data', {'uid': uid,
                                       'user_name': user.data['user_name'],
                                       'real_name': user.data['real_name'],
