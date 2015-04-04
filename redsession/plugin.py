@@ -59,13 +59,13 @@ class RedSessionPlugin(object):
         self.connection_pool = None
         self.db_handle = None
 
-        self.keyword = 'red-session'
+        self.keywords = ['db', 'session']
 
     def setup(self, app):
         for other in app.plugins:
             if not isinstance(other, RedSessionPlugin):
                 continue
-            if other.keyword in ['session', 'redis', 'red-session']:
+            if other.keyword in self.keywords:
                 raise PluginError("Found another session plugin with conflicting settings (non-unique keyword).")
 
         if self.connection_pool is None:
@@ -83,12 +83,11 @@ class RedSessionPlugin(object):
         # conf = context.config.get('session') or {}
         arguments = inspect.getargspec(context.callback)[0]
 
-        # if self.keyword not in arguments:
-        #     return callback
-
         def wrapper(*args, **kwargs):
-            kwargs['session'] = Session(self.db_handle, self.cookie_name, self.cookie_lifetime)
-            kwargs['db'] = self.db_handle
+            if 'session' in arguments:
+                kwargs['session'] = Session(self.db_handle, self.cookie_name, self.cookie_lifetime)
+            if 'db' in arguments:
+                kwargs['db'] = self.db_handle
             rv = callback(*args, **kwargs)
             return rv
 
