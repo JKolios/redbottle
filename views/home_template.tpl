@@ -1,4 +1,4 @@
-% if user in session:
+% if 'user' in session:
 <p style="text-align : center"> Welcome to bottledis.</p>
 <p style="text-align : center"> Current User: Name: {{session['user']['user_name']}}. ID: {{session['user']['user_id']}}</p>
 <p style="text-align : center"> <a href="./post">Post something new</a></p>
