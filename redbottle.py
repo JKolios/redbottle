@@ -24,7 +24,7 @@ def show_home(db, session):
 
 @bottledis_app.route('/sign_in')
 def signin_form(db, session):
-    return bottle.template('sign_in_template.tpl', session)
+    return bottle.template('sign_in_template.tpl')
 
 @bottledis_app.route('/sign_in_result', method='POST')
 def signin_result(db, session):
