@@ -58,8 +58,16 @@ class User(Document):
     document_prefix = 'user'
     required_keys = ['user_name', 'real_name', 'password']
 
-    def __init__(self, db,  uid=None, data_dict=None):
-        Document.__init__(self, db, doc_id=uid, data_dict=data_dict)
+    def __init__(self, db,  doc_id=None, data_dict=None):
+        Document.__init__(self, db, doc_id=doc_id, data_dict=data_dict)
+
+
+class Post(Document):
+    document_prefix = 'post'
+    required_keys = ['poster_name', 'subject', 'body']
+
+    def __init__(self, db,  doc_id=None, data_dict=None):
+        Document.__init__(self, db, doc_id=doc_id, data_dict=data_dict)
 
 
 
