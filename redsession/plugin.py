@@ -83,8 +83,8 @@ class RedSessionPlugin(object):
         # conf = context.config.get('session') or {}
         arguments = inspect.getargspec(context.callback)[0]
 
-        if self.keyword not in arguments:
-            return callback
+        # if self.keyword not in arguments:
+        #     return callback
 
         def wrapper(*args, **kwargs):
             kwargs['session'] = Session(self.db_handle, self.cookie_name, self.cookie_lifetime)
