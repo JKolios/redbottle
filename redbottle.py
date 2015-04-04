@@ -47,7 +47,7 @@ def signin_result(db, session):
             else:
                 message = 'Sign in failed: Wrong Password given.'
                 break
-    if 'user' not in session:
+    if 'user_id' not in session:
         message = 'Sign in failed: No such user.'
     return bottle.template('sign_in_result.tpl', {'message': message})
 
