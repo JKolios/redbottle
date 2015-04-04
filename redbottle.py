@@ -19,7 +19,6 @@ def app_init():
 
 @bottledis_app.route('/')
 def show_home(db, session):
-    print type(session['user'])
     return bottle.template('home_template.tpl', {'session': session})
 
 
