@@ -19,7 +19,7 @@ def app_init():
     bottledis_app.install(redis_plugin)
 
     session_plugin = SessionPlugin(cookie_lifetime=SESSION_LIFETIME,
-                                   host=redis_config['hostname'],
+                                   host=redis_config['host'],
                                    port=redis_config['port'],
                                    db=redis_config['database'])
 
