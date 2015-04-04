@@ -1,4 +1,5 @@
-<p style="text-align : center"> Welcome to bottledis.</p>
+<p style="text-align : center"> Welcome to redbottle.</p>
+<img source="https://c2.staticflickr.com/4/3167/2774403104_805f1aa2b8.jpg" alt="Red Bottle"</img>
 % if 'user_id' in session:
 <p style="text-align : center"> Current User: Name: {{session["user_name"]}}.</p>
 <p style="text-align : center"> <a href="./post">Post something new</a></p>

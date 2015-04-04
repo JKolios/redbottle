@@ -5,28 +5,28 @@ from model.user import User, Post, NotFound
 
 SESSION_LIFETIME = 7 * 24 * 3600
 
-bottledis_app = bottle.Bottle()
+redbottle_app = bottle.Bottle()
 
 
 def app_init():
 
     bottle.debug(True)
     red_session_plugin = RedSessionPlugin(cookie_lifetime=SESSION_LIFETIME, **redis_config)
-    bottledis_app.install(red_session_plugin)
+    redbottle_app.install(red_session_plugin)
 
-    bottle.run(bottledis_app, **bottle_config)
+    bottle.run(redbottle_app, **bottle_config)
 
 
-@bottledis_app.route('/')
+@redbottle_app.route('/')
 def show_home(db, session):
     return bottle.template('home_template.tpl', {'session': session})
 
 
-@bottledis_app.route('/sign_in')
+@redbottle_app.route('/sign_in')
 def signin_form(db, session):
     return bottle.template('sign_in_template.tpl')
 
-@bottledis_app.route('/sign_in_result', method='POST')
+@redbottle_app.route('/sign_in_result', method='POST')
 def signin_result(db, session):
     user_name = bottle.request.forms.get('user_name')
     password = bottle.request.forms.get('password')
@@ -51,12 +51,12 @@ def signin_result(db, session):
     return bottle.template('sign_in_result.tpl', {'message': message})
 
 
-@bottledis_app.route('/sign_up', method='GET')
+@redbottle_app.route('/sign_up', method='GET')
 def signup_form(session):
     return bottle.template('register_user_template')
 
 
-@bottledis_app.route('/add_user', method='POST')
+@redbottle_app.route('/add_user', method='POST')
 def register_user(db, session):
     user_name = bottle.request.forms.get('user_name')
     real_name = bottle.request.forms.get('real_name')
@@ -66,12 +66,12 @@ def register_user(db, session):
     return bottle.template('user_success', {'uid': uid})
 
 
-@bottledis_app.route('/post')
+@redbottle_app.route('/post')
 def show_post_form(session):
     return bottle.template('post_template')
 
 
-@bottledis_app.route('/add_post')
+@redbottle_app.route('/add_post')
 def add_new_post(db, session):
     subject = bottle.request.query.subject
     post = bottle.request.query.post
@@ -80,7 +80,7 @@ def add_new_post(db, session):
     return bottle.template('post_success', subject=subject, post=post)
 
 
-@bottledis_app.route('/get_all_posts')
+@redbottle_app.route('/get_all_posts')
 def get_all_posts(db, session):
     post_ids = db.scan(0, match='post*')
 
@@ -91,7 +91,7 @@ def get_all_posts(db, session):
     return bottle.template('read_template.tpl', posts=posts)
 
 
-@bottledis_app.route('/clear_posts')
+@redbottle_app.route('/clear_posts')
 def clear_posts(db, session):
     post_ids = db.scan(0, match='post*')
     for post_id in post_ids:
@@ -99,12 +99,12 @@ def clear_posts(db, session):
     return bottle.template('delete_template.tpl', length=len(post_ids[1]))
 
 
-@bottledis_app.route('/get_user_data', method='GET')
+@redbottle_app.route('/get_user_data', method='GET')
 def show_user_data_form(db, session):
     return bottle.template('user_data_request')
 
 
-@bottledis_app.route('/user_data', method='POST')
+@redbottle_app.route('/user_data', method='POST')
 def get_user_data(db, session):
     uid = bottle.request.forms.get('uid')
     try:
@@ -117,7 +117,7 @@ def get_user_data(db, session):
     except NotFound:
         return bottle.template('user_not_found', {'uid': uid})
 
-@bottledis_app.route('/logout', method='GET')
+@redbottle_app.route('/logout', method='GET')
 def log_out(db, session):
     user_name = session['user_name']
     session.destroy()
