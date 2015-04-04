@@ -1,5 +1,6 @@
 import bottle
 from bottle_session import SessionPlugin
+from bottle_redis import RedisPlugin
 from config import bottle_config, redis_config
 from model.user import User, NotFound
 
@@ -14,7 +15,7 @@ bottledis_app = bottle.Bottle()
 def app_init():
 
     bottle.debug(True)
-    redis_plugin = bottle.ext.redis.RedisPlugin(**redis_config)
+    redis_plugin = RedisPlugin(**redis_config)
     bottledis_app.install(redis_plugin)
 
     session_plugin = SessionPlugin(cookie_lifetime=SESSION_LIFETIME, **redis_config)
