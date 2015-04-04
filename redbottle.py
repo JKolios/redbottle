@@ -38,11 +38,11 @@ def add_new_post(db, session):
 
 @bottledis_app.route('/get_all_posts')
 def get_all_posts(db, session):
-    all_post_ids = db.scan(0, match='post*')
-    print all_post_ids
+    post_ids = db.scan(0, match='post*')
+    print post_ids
 
     posts = []
-    for post_id in all_post_ids:
+    for post_id in post_ids[1]:
         posts.append(Post(db=db, doc_id=post_id).data)
     print posts
 
@@ -51,10 +51,10 @@ def get_all_posts(db, session):
 
 @bottledis_app.route('/clear_posts')
 def clear_posts(db, session):
-    all_post_ids = db.scan(0, match='post*')
-    for post_id in all_post_ids:
+    post_ids = db.scan(0, match='post*')
+    for post_id in post_ids:
         db.delete(post_id)
-    return bottle.template('delete_template.tpl', length=len(all_post_ids))
+    return bottle.template('delete_template.tpl', length=len(post_ids[1]))
 
 
 @bottledis_app.route('/user', method='GET')
