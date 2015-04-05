@@ -1,7 +1,5 @@
-<head>
-<meta http-equiv="refresh" content="5;url=/">
-</head>
+% include('redirect_to_home.tpl')
 <body>
 <p>Logged out User: {{user_name}}</p>
-<p>Redirecting in 5 seconds.</p>
+<p>Redirecting to home.</p>
 </body>

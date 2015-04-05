@@ -4,3 +4,7 @@ bottle
 bottle-session
 bottle-redis
 pycrypto
+oauth2
+requests
+requests_oauthlib
+ujson

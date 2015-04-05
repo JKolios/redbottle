@@ -1,4 +1,4 @@
-from uuid import uuid4
+from utils import get_uuid
 
 
 class NotFound(Exception):
@@ -22,13 +22,10 @@ class Document(object):
             if not self.validate(data_dict):
                 return
             self.data_dict = data_dict
-            print self.data_dict
 
     def validate(self, data):
-        print data.keys()
-        print self.required_keys
-        for key in data.keys():
-            if key not in self.required_keys:
+        for key in self.required_keys:
+            if key not in data.keys():
                 return False
         return True
 
@@ -47,13 +44,12 @@ class Document(object):
     def save(self):
         if not self.doc_id:
             self.doc_id = self.get_uid_for_type()
-        print self.data_dict
         self.db.hmset(self.doc_id, self.data_dict)
         return self.doc_id
 
     @classmethod
     def get_uid_for_type(cls):
-        return cls.document_prefix + '_' + str(uuid4())[:8]
+        return cls.document_prefix + '_' + str(get_uuid())
 
 
 class User(Document):
