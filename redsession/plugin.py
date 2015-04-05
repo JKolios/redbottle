@@ -1,13 +1,8 @@
 import redis
 import inspect
 from bottle import PluginError, request, response
+from utils import get_uuid
 from uuid import UUID
-from Crypto.Random import get_random_bytes
-
-
-def get_uuid():
-    return UUID(bytes=get_random_bytes(16))
-
 
 MAX_TTL = 7 * 24 * 3600  # 7 day maximum cookie limit for sessions
 
@@ -127,7 +122,7 @@ class Session(object):
         response.set_cookie(self.cookie_name, value, max_age=self.max_age, path='/')
 
     def validate_session_id(self, cookie_value):
-        keycheck = 'session:%s' % str(UUID(cookie_value))
+        keycheck = 'session_%s' % str(UUID(cookie_value))
         if self.rdb.exists(keycheck):
             self.session_hash = keycheck
             self.rdb.expire(self.session_hash, self.ttl)
@@ -137,7 +132,7 @@ class Session(object):
 
     def new_session_id(self):
         uid = get_uuid()
-        self.session_hash = 'session:%s' % str(uid)
+        self.session_hash = 'session_%s' % str(uid)
         self.set_cookie(uid.hex)
 
     def destroy(self):
