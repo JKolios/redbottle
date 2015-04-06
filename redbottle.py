@@ -1,7 +1,7 @@
 import bottle
 from redsession.plugin import RedSessionPlugin
 from config import bottle_config, redis_config, twitter_config
-from model.user import User, Post, NotFound
+from model.docs import User, Post, NotFound
 import urlparse
 import oauth2
 from urllib import urlencode
@@ -41,10 +41,10 @@ def signin_result(db, session):
     user_name = bottle.request.forms.get('user_name')
     password = bottle.request.forms.get('password')
 
-    user_record_ids = db.scan(0, match='user*')
+    user_record_ids = User.get_all_ids(db)
 
-    for user_record_id in user_record_ids[1]:
-        user_dict = User(db=db, doc_id=user_record_id).data
+    for user_record_id in user_record_ids:
+        user_dict = User(db, doc_id=user_record_id).data
         if user_name == user_dict['user_name']:
             if password == user_dict['password']:
 
@@ -80,8 +80,8 @@ def register_user(db):
                      password=password,
                      avatar_url=avatar_url)
 
-    uid = create_user(db, user_dict)
-    return bottle.template('user_success', {'uid': uid})
+    user_name = User(db, data=user_dict).data['user_name']
+    return bottle.template('user_success', {'user_name': user_name})
 
 
 @redbottle_app.route('/sign_in_twitter', method='GET')
@@ -138,16 +138,15 @@ def twitter_response(db, session):
                          twitter_access_secret=user_access_secret)
 
     # determine if this is a sign-in or a new user
-    user_record_ids = db.scan(0, match='user*')
+    user_record_ids = User.get_all_ids(db)
 
-    for user_record_id in user_record_ids[1]:
-        user = User(db=db, doc_id=user_record_id)
+    for user_record_id in user_record_ids:
+        user = User(db, doc_id=user_record_id)
         if twitter_user_data['screen_name'] == user.data['user_name']:
             # this is a sign-in
-            user.data_dict = new_user_dict
-            new_user_id = user.save()
+            user_id = user.update(db, new_data=new_user_dict)
 
-            session['user_id'] = new_user_id
+            session['user_id'] = user_id
             session['user_name'] = twitter_user_data['screen_name']
             session['real_name'] = twitter_user_data['name']
             session['twitter_access_token'] = user_access_token
@@ -157,20 +156,15 @@ def twitter_response(db, session):
 
     # this is a new user
 
-    user_id = create_user(db, new_user_dict)
+    new_user_id = User(db, data=new_user_dict)
 
-    session['user_id'] = user_id
+    session['user_id'] = new_user_id
     session['user_name'] = new_user_dict['user_name']
     session['real_name'] = new_user_dict['real_name']
     session['twitter_access_token'] = user_access_token
     session['twitter_access_secret'] = user_access_secret
     session['avatar_url'] = twitter_user_data['profile_image_url_https']
     return bottle.redirect('/')
-
-
-def create_user(db, user_dict):
-    new_user = User(db, data_dict=user_dict)
-    return new_user.save()
 
 
 @redbottle_app.route('/post')
@@ -181,29 +175,28 @@ def show_post_form():
 @redbottle_app.route('/add_post')
 def add_new_post(db, session):
     subject = bottle.request.query.subject
-    post = bottle.request.query.post
-    new_post = Post(db=db, data_dict=dict(subject=subject, body=post, user_name=session['user_name']))
-    new_post.save()
-    return bottle.template('post_success', subject=subject, post=post)
+    body = bottle.request.query.post
+    Post(db, data=dict(subject=subject, body=body, user_name=session['user_name']))
+    return bottle.template('post_success', subject=subject, post=body)
 
 
 @redbottle_app.route('/get_all_posts')
 def get_all_posts(db):
-    post_ids = db.scan(0, match='post*')
+    post_ids = Post.get_all_ids(db)
 
     posts = []
-    for post_id in post_ids[1]:
-        posts.append(Post(db=db, doc_id=post_id).data)
+    for post_id in post_ids:
+        posts.append(Post(db, doc_id=post_id).data)
 
     return bottle.template('read_template.tpl', posts=posts)
 
 
 @redbottle_app.route('/clear_posts')
 def clear_posts(db):
-    post_ids = db.scan(0, match='post*')
+    post_ids = Post.get_all_ids(db)
     for post_id in post_ids:
         db.delete(post_id)
-    return bottle.template('delete_template.tpl', length=len(post_ids[1]))
+    return bottle.template('delete_template.tpl')
 
 
 @redbottle_app.route('/get_user_data', method='GET')
@@ -212,18 +205,22 @@ def show_user_data_form():
 
 
 @redbottle_app.route('/user_data', method='POST')
-def get_user_data(db):
-    uid = bottle.request.forms.get('uid')
-    try:
-        user = User(db, doc_id=uid)
-        return bottle.template('user_data', {'uid': uid,
-                                             'user_name': user.data['user_name'],
-                                             'real_name': user.data['real_name'],
-                                             'password': user.data['password'],
-                                             'avatar_url': user.data['avatar_url']
-                                             })
-    except NotFound:
-        return bottle.template('user_not_found', {'uid': uid})
+def get_user_data(db, session):
+    user_name = bottle.request.forms.get('user_name')
+
+    user_record_ids = User.get_all_ids(db)
+
+    for user_record_id in user_record_ids:
+        user = User(db, doc_id=user_record_id)
+        if user.data['user_name'] == session['user_name']:
+            return bottle.template('user_data', {'uid': user_record_id,
+                                                 'user_name': user.data['user_name'],
+                                                 'real_name': user.data['real_name'],
+                                                 'password': user.data['password'],
+                                                 'avatar_url': user.data['avatar_url']
+                                                 })
+
+    return bottle.template('user_not_found', {'user_name': user_name})
 
 
 @redbottle_app.route('/logout', method='GET')

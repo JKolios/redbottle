@@ -1,14 +1,14 @@
 <p style="text-align : center"> Welcome to redbottle.</p>
 <div style="text-align : center">
-    <img src="https://c2.staticflickr.com/4/3167/2774403104_805f1aa2b8.jpg" alt="Red Bottle" style="height:auto; width:auto; max-width:300px; max-height:300px;"</img>
+    <img src="https://c2.staticflickr.com/4/3167/2774403104_805f1aa2b8.jpg" alt="Red Bottle" style="height:auto; width:auto; max-width:200px; max-height:200px;"</img>
 </div>
 
-% if 'user_id' in session:
+% if session.get('user_id'):
 <p style="text-align : center"> Current User: {{session["user_name"]}}.</p>
 
-%if 'avatar_url' in session:
+%if session.get('avatar_url'):
 <div style="text-align : center">
-    <img src="{{session["avatar_url"]}}" alt="Red Bottle" style="height:auto; width:auto; max-width:150px; max-height:150px;"</img>
+    <img src="{{session["avatar_url"]}}" alt="User Avatar" style="height:auto; width:auto; max-width:150px; max-height:150px;"</img>
 </div>
 %end
 
