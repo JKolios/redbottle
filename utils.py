@@ -2,4 +2,4 @@ from uuid import uuid4
 
 
 def get_uuid():
-    return uuid4()[:8]
+    return str(uuid4())[:8]
